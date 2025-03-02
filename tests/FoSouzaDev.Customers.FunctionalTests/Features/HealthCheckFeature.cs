@@ -10,27 +10,27 @@ public sealed class HealthCheckFeature(MongoDbFixture mongoDbFixture) : BaseFeat
     [Given("All dependencies are ok")]
     public void DependenciesOk()
     {
-        base.StartApplication();
+        StartApplication();
     }
 
     [Given("Database unavailable")]
     public void DatabaseUnavailable()
     {
-        base.DefaultConfiguration["MongoDbSettings:ConnectionURI"] = "mongodb://test:test@localhost:27017";
+        DefaultConfiguration["MongoDbSettings:ConnectionURI"] = "mongodb://test:test@localhost:27017";
 
-        base.StartApplication();
+        StartApplication();
     }
 
     [When("I send the request")]
     public async Task SendRequest()
     {
-        base.HttpResponse = await base.HttpClient!.GetAsync("api/health-check");
+        HttpResponse = await HttpClient.GetAsync("api/health-check");
     }
 
     [And("The response data must be (.*)")]
     public async Task ValidateResponseData(string expectedData)
     {
-        string data = await base.HttpResponse!.Content.ReadAsStringAsync();
+        string data = await HttpResponse.Content.ReadAsStringAsync();
 
         data.Should().Be(expectedData);
     }

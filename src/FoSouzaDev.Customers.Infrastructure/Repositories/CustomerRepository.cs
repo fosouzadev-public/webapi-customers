@@ -2,19 +2,23 @@
 using FoSouzaDev.Customers.Domain.Exceptions;
 using FoSouzaDev.Customers.Domain.Repositories;
 using FoSouzaDev.Customers.Infrastructure.Repositories.Entities;
+using FoSouzaDev.Customers.Infrastructure.Repositories.Factories;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
 namespace FoSouzaDev.Customers.Infrastructure.Repositories;
 
-internal sealed class CustomerRepository(IMongoDatabase mongoDatabase, ILogger<CustomerRepository> logger) : ICustomerRepository
+internal sealed class CustomerRepository(
+    IMongoDatabase mongoDatabase,
+    ILogger<CustomerRepository> logger,
+    ICustomerEntityFactory factory) : ICustomerRepository
 {
     private const string CollectionName = "customers";
     private readonly IMongoCollection<CustomerEntity> _collection = mongoDatabase.GetCollection<CustomerEntity>(CollectionName);
 
     public async Task AddAsync(Customer customer)
     {
-        CustomerEntity customerEntity = (CustomerEntity)customer;
+        CustomerEntity customerEntity = factory.CustomerToCustomerEntity(customer);
 
         try
         {
@@ -29,17 +33,17 @@ internal sealed class CustomerRepository(IMongoDatabase mongoDatabase, ILogger<C
         customer.Id = customerEntity.Id;
     }
 
-    public async Task<Customer?> GetByIdAsync(string id)
+    public async Task<Customer> GetByIdAsync(string id)
     {
         var filter = Builders<CustomerEntity>.Filter.Eq(a => a.Id, id);
-        CustomerEntity? customerEntity = (await _collection.FindAsync(filter)).FirstOrDefault();
+        CustomerEntity customerEntity = (await _collection.FindAsync(filter)).FirstOrDefault();
 
-        return (Customer?)customerEntity;
+        return factory.CustomerEntityToCustomer(customerEntity);
     }
 
     public async Task ReplaceAsync(Customer customer)
     {
-        CustomerEntity customerEntity = (CustomerEntity)customer;
+        CustomerEntity customerEntity = factory.CustomerToCustomerEntity(customer);
 
         var filter = Builders<CustomerEntity>.Filter.Eq(a => a.Id, customerEntity.Id);
         ReplaceOneResult result = await _collection.ReplaceOneAsync(filter, customerEntity);

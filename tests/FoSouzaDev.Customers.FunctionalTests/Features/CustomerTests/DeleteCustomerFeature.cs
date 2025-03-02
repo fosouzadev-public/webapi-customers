@@ -13,13 +13,13 @@ public sealed class DeleteCustomerFeature(MongoDbFixture mongoDbFixture) : BaseC
     {
         StartApplication();
 
-        base.HttpResponse = await base.HttpClient!.DeleteAsync($"{Route}/{base.CustomerId}");
+        HttpResponse = await HttpClient.DeleteAsync($"{Route}/{CustomerId}");
     }
 
     [And("The customer must not exist in the database")]
     public async Task ValidateDatabase()
     {
-        Customer? customer = await base.CustomerRepository.GetByIdAsync(base.CustomerId!);
+        Customer customer = await Repository.GetByIdAsync(CustomerId);
         customer.Should().BeNull();
     }
 }

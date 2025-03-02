@@ -1,4 +1,5 @@
 ﻿using FoSouzaDev.Customers.Application.DataTransferObjects;
+using FoSouzaDev.Customers.Application.Factories;
 using FoSouzaDev.Customers.Domain.Entities;
 using FoSouzaDev.Customers.Domain.Exceptions;
 using FoSouzaDev.Customers.Domain.Repositories;
@@ -7,12 +8,17 @@ using Microsoft.AspNetCore.JsonPatch;
 
 namespace FoSouzaDev.Customers.Application.Services;
 
-internal sealed class CustomerApplicationService(ICustomerRepository customerRepository) : ICustomerApplicationService
+internal sealed class CustomerApplicationService(
+    ICustomerRepository repository,
+    ICustomerFactory factory) : ICustomerApplicationService
 {
+    private async Task<Customer> GetByIdOrThrowAsync(string id) =>
+        (await repository.GetByIdAsync(id)) ?? throw new NotFoundException(id);
+    
     public async Task<string> AddAsync(AddCustomerDto customer)
     {
-        Customer entity = (Customer)customer;
-        await customerRepository.AddAsync(entity);
+        Customer entity = factory.AddCustomerDtoToCustomer(customer);
+        await repository.AddAsync(entity);
 
         return entity.Id;
     }
@@ -20,29 +26,26 @@ internal sealed class CustomerApplicationService(ICustomerRepository customerRep
     public async Task<CustomerDto> GetByIdAsync(string id)
     {
         Customer entity = await GetByIdOrThrowAsync(id);
-        return (CustomerDto)entity;
+        return factory.CustomerToCustomerDto(entity);
     }
 
     public async Task EditAsync(string id, JsonPatchDocument<EditCustomerDto> pathDocument)
     {
         Customer entity = await GetByIdOrThrowAsync(id);
         
-        EditCustomerDto editCustomer = (EditCustomerDto)entity;
+        EditCustomerDto editCustomer = factory.CustomerToEditCustomerDto(entity);
         pathDocument.ApplyTo(editCustomer);
 
         entity.FullName = new FullName(editCustomer.Name, editCustomer.LastName);
         entity.Notes = editCustomer.Notes;
 
-        await customerRepository.ReplaceAsync(entity);
+        await repository.ReplaceAsync(entity);
     }
 
     public async Task DeleteAsync(string id)
     {
         _ = await GetByIdOrThrowAsync(id);
 
-        await customerRepository.DeleteAsync(id);
+        await repository.DeleteAsync(id);
     }
-
-    private async Task<Customer> GetByIdOrThrowAsync(string id) =>
-        (await customerRepository.GetByIdAsync(id)) ?? throw new NotFoundException(id);
 }

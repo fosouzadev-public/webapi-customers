@@ -1,11 +1,11 @@
-﻿using AutoFixture;
+﻿using System.Text;
+using AutoFixture;
 using FluentAssertions;
 using FoSouzaDev.Customers.Application.DataTransferObjects;
 using FoSouzaDev.Customers.CommonTests;
 using FoSouzaDev.Customers.Domain.Entities;
 using FoSouzaDev.Customers.WebApi.Responses;
 using Newtonsoft.Json;
-using System.Text;
 using Xunit.Gherkin.Quick;
 
 namespace FoSouzaDev.Customers.FunctionalTests.Features.CustomerTests;
@@ -13,7 +13,7 @@ namespace FoSouzaDev.Customers.FunctionalTests.Features.CustomerTests;
 [FeatureFile("./Features/CustomerTests/RegisterCustomer.feature")]
 public sealed class RegisterCustomerFeature(MongoDbFixture mongoDbFixture) : BaseCustomerFeature(mongoDbFixture)
 {
-    private AddCustomerDto? _customerDto;
+    private AddCustomerDto _customerDto;
 
     [Given("I choose valid random data for a new customer")]
     public void GenerateValidCustomerData()
@@ -29,16 +29,16 @@ public sealed class RegisterCustomerFeature(MongoDbFixture mongoDbFixture) : Bas
     {
         GenerateValidCustomerData();
 
-        Customer currentCustomer = (Customer)_customerDto!;
-        await base.CustomerRepository.AddAsync(currentCustomer);
+        Customer currentCustomer = ApplicationFactory.AddCustomerDtoToCustomer(_customerDto);
+        await Repository.AddAsync(currentCustomer);
     }
 
     [Given("I choose the data for a new customer with an invalid (.*)")]
     public void GenerateInvalidCustomerData(string invalidData)
     {
         _customerDto = Fixture.Build<AddCustomerDto>()
-            .With(a => a.Name, invalidData == "name" ? string.Empty : base.Fixture.Create<string>())
-            .With(a => a.LastName, invalidData == "last name" ? string.Empty : base.Fixture.Create<string>())
+            .With(a => a.Name, invalidData == "name" ? string.Empty : Fixture.Create<string>())
+            .With(a => a.LastName, invalidData == "last name" ? string.Empty : Fixture.Create<string>())
             .With(a => a.BirthDate, invalidData == "date of birth" ? DateTime.Now.Date : ValidDataGenerator.ValidBirthDate)
             .With(a => a.Email, invalidData == "email" ? string.Empty : ValidDataGenerator.ValidEmail)
             .Create();
@@ -50,29 +50,30 @@ public sealed class RegisterCustomerFeature(MongoDbFixture mongoDbFixture) : Bas
         StartApplication();
 
         using StringContent jsonContent = new(JsonConvert.SerializeObject(_customerDto), Encoding.UTF8, "application/json");
-        base.HttpResponse = await base.HttpClient!.PostAsync(Route, jsonContent);
+        HttpResponse = await HttpClient.PostAsync(Route, jsonContent);
     }
 
-    [And("The response contais the inserted id")]
+    [And("The response contains the inserted id")]
     public async Task ValidateResponseData()
     {
-        ResponseData<string>? responseData = await base.GetResponseDataAsync<string>();
+        ResponseData<string> responseData = await GetResponseDataAsync<string>();
 
         responseData.Should().NotBeNull();
-        responseData!.Data.Should().NotBeNull();
+        responseData.Data.Should().NotBeNull();
         responseData.ErrorMessage.Should().BeNull();
 
-        base.CustomerId = responseData!.Data;
+        CustomerId = responseData.Data;
     }
 
     [And("The customer must exist in the database")]
     public async Task ValidateDatabase()
     {
-        Customer? customer = await base.CustomerRepository.GetByIdAsync(base.CustomerId!);
+        Customer customer = await Repository.GetByIdAsync(CustomerId);
         customer.Should().NotBeNull();
 
-        Customer expectedCustomer = (Customer)_customerDto!;
-        expectedCustomer.Id = base.CustomerId!;
+        Customer expectedCustomer = ApplicationFactory.AddCustomerDtoToCustomer(_customerDto);
+        expectedCustomer.Id = CustomerId;
+        
         customer.Should().BeEquivalentTo(expectedCustomer);
     }
 }

@@ -11,7 +11,7 @@ public sealed class NotFoundExceptionTest : BaseTest
     public void Constructor_Success_CreateAnException()
     {
         // Arrange
-        string expectedId = base.Fixture.Create<string>();
+        string expectedId = Fixture.Create<string>();
 
         // Act
         NotFoundException ex = new(expectedId);

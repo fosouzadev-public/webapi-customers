@@ -11,7 +11,7 @@ public sealed class ValidateExceptionTest : BaseTest
     public void Constructor_Success_CreateAnException()
     {
         // Arrange
-        string expectedMessage = base.Fixture.Create<string>();
+        string expectedMessage = Fixture.Create<string>();
 
         // Act
         ValidateException ex = new(expectedMessage);

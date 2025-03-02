@@ -1,9 +1,9 @@
-﻿using AutoFixture;
+﻿using System.Net;
+using AutoFixture;
 using FluentAssertions;
 using FoSouzaDev.Customers.CommonTests;
 using FoSouzaDev.Customers.WebApi.Responses;
 using Newtonsoft.Json;
-using System.Net;
 using Xunit.Gherkin.Quick;
 
 namespace FoSouzaDev.Customers.FunctionalTests;
@@ -12,22 +12,15 @@ namespace FoSouzaDev.Customers.FunctionalTests;
 public abstract class BaseFeature : Feature, IDisposable
 {
     protected Fixture Fixture { get; private init; }
-
-    protected IDictionary<string, string?> DefaultConfiguration { get; private init; }
-    protected HttpClient? HttpClient { get; private set; }
-    protected HttpResponseMessage? HttpResponse { get; set; }
-
-    [Then(@"The http response should be (\d+)")]
-    public void ValidateResponse(int httpStatusCode)
-    {
-        HttpResponse!.StatusCode.Should().Be((HttpStatusCode)httpStatusCode);
-    }
+    protected IDictionary<string, string> DefaultConfiguration { get; }
+    protected HttpClient HttpClient { get; private set; }
+    protected HttpResponseMessage HttpResponse { get; set; }
 
     protected BaseFeature(MongoDbFixture mongoDbFixture)
     {
         Fixture = new();
 
-        DefaultConfiguration = new Dictionary<string, string?>
+        DefaultConfiguration = new Dictionary<string, string>
         {
             { "Logging:LogLevel:Default", "Information" },
             { "Logging:LogLevel:Microsoft.AspNetCore", "Critical" },
@@ -39,22 +32,28 @@ public abstract class BaseFeature : Feature, IDisposable
         };
     }
 
+    [Then(@"The http response should be (\d+)")]
+    public void ValidateResponse(int httpStatusCode)
+    {
+        HttpResponse.StatusCode.Should().Be((HttpStatusCode)httpStatusCode);
+    }
+    
     protected void StartApplication()
     {
         HttpClient = new WebApiFactory(DefaultConfiguration).CreateClient();
     }
 
-    internal async Task<ResponseData<T>?> GetResponseDataAsync<T>()
+    internal async Task<ResponseData<T>> GetResponseDataAsync<T>()
     {
-        string jsonContent = await HttpResponse!.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<ResponseData<T>?>(jsonContent);
+        string jsonContent = await HttpResponse.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<ResponseData<T>>(jsonContent);
     }
 
     public void Dispose()
     {
         GC.SuppressFinalize(this);
 
-        HttpClient!.Dispose();
-        HttpResponse!.Dispose();
+        HttpClient.Dispose();
+        HttpResponse.Dispose();
     }
 }

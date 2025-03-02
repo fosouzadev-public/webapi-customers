@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FoSouzaDev.Customers.FunctionalTests;
 
-public sealed class WebApiFactory(IDictionary<string, string?> configuration) : WebApplicationFactory<Program>
+public sealed class WebApiFactory(IDictionary<string, string> configuration) : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

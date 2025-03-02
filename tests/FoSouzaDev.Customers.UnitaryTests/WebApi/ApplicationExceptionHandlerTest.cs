@@ -40,11 +40,11 @@ public sealed class ApplicationExceptionHandlerTest : BaseTest
 
         Exception ex = exceptionType switch
         {
-            nameof(ValidateException) => base.Fixture.Create<ValidateException>(),
-            nameof(JsonPatchException) => base.Fixture.Create<JsonPatchException>(),
-            nameof(NotFoundException) => base.Fixture.Create<NotFoundException>(),
-            nameof(ConflictException) => base.Fixture.Create<ConflictException>(),
-            _ => base.Fixture.Create<Exception>()
+            nameof(ValidateException) => Fixture.Create<ValidateException>(),
+            nameof(JsonPatchException) => Fixture.Create<JsonPatchException>(),
+            nameof(NotFoundException) => Fixture.Create<NotFoundException>(),
+            nameof(ConflictException) => Fixture.Create<ConflictException>(),
+            _ => Fixture.Create<Exception>()
         };
         CancellationToken cancellationToken = CancellationToken.None;
 

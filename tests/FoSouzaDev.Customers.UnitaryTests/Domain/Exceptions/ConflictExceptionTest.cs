@@ -11,7 +11,7 @@ public sealed class ConflictExceptionTest : BaseTest
     public void Constructor_Success_CreateAnException()
     {
         // Arrange
-        string expectedEmail = base.Fixture.Create<string>();
+        string expectedEmail = Fixture.Create<string>();
 
         // Act
         ConflictException ex = new(expectedEmail);

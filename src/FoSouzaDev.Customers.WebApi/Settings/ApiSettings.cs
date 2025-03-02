@@ -1,6 +1,8 @@
-﻿using FoSouzaDev.Customers.Application.Services;
+﻿using FoSouzaDev.Customers.Application.Factories;
+using FoSouzaDev.Customers.Application.Services;
 using FoSouzaDev.Customers.Domain.Repositories;
 using FoSouzaDev.Customers.Infrastructure.Repositories;
+using FoSouzaDev.Customers.Infrastructure.Repositories.Factories;
 using FoSouzaDev.Customers.Infrastructure.Repositories.Settings;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -13,14 +15,16 @@ public static class ApiSettings
     public static void AddApiServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<MongoDbSettings>(configuration.GetSection(nameof(MongoDbSettings)));
-
+        
+        services.AddSingleton<ICustomerFactory, CustomerFactory>();
+        services.AddSingleton<ICustomerEntityFactory, CustomerEntityFactory>();
         services.AddSingleton<ICustomerRepository, CustomerRepository>();
         services.AddSingleton<ICustomerApplicationService, CustomerApplicationService>();
 
         services.AddSingleton<IMongoClient>(provider =>
         {
             MongoDbSettings mongoDbSettings = provider.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-            return new MongoClient(mongoDbSettings.ConnectionURI);
+            return new MongoClient(mongoDbSettings.ConnectionUri);
         });
 
         services.AddSingleton<IMongoDatabase>(provider =>

@@ -2,11 +2,11 @@
 using FoSouzaDev.Customers.Domain.Entities;
 using FoSouzaDev.Customers.Domain.ValueObjects;
 
-namespace FoSouzaDev.Customers.Application.Mappings;
+namespace FoSouzaDev.Customers.Application.Factories;
 
-internal static class CustomerFactory
+internal class CustomerFactory : ICustomerFactory
 {
-    public static CustomerDto CustomerToCustomerDto(Customer customer) => new()
+    public CustomerDto CustomerToCustomerDto(Customer customer) => new()
     {
         Id = customer.Id,
         Name = customer.FullName.Name,
@@ -16,7 +16,7 @@ internal static class CustomerFactory
         Notes = customer.Notes
     };
 
-    public static Customer AddCustomerDtoToCustomer(AddCustomerDto addCustomerDto) => new()
+    public Customer AddCustomerDtoToCustomer(AddCustomerDto addCustomerDto) => new()
     {
         Id = string.Empty,
         FullName = new FullName(addCustomerDto.Name, addCustomerDto.LastName),
@@ -25,7 +25,7 @@ internal static class CustomerFactory
         Notes = addCustomerDto.Notes
     };
 
-    public static EditCustomerDto CustomerToEditCustomerDto(Customer customer) => new()
+    public EditCustomerDto CustomerToEditCustomerDto(Customer customer) => new()
     {
         Name = customer.FullName.Name,
         LastName = customer.FullName.LastName,

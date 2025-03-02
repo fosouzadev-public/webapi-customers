@@ -16,22 +16,22 @@ public sealed class QueryCustomerFeature(MongoDbFixture mongoDbFixture) : BaseCu
     {
         StartApplication();
 
-        base.HttpResponse = await base.HttpClient!.GetAsync($"{Route}/{base.CustomerId}");
+        HttpResponse = await HttpClient.GetAsync($"{Route}/{CustomerId}");
     }
 
     [And("The response contains the requested customer data")]
     public async Task ValidateResponseData()
     {
-        Customer? customer = await base.CustomerRepository.GetByIdAsync(base.CustomerId!);
+        Customer customer = await Repository.GetByIdAsync(CustomerId);
         customer.Should().NotBeNull();
 
-        string jsonContent = await base.HttpResponse!.Content.ReadAsStringAsync();
-        ResponseData<CustomerDto>? responseData = JsonConvert.DeserializeObject<ResponseData<CustomerDto>>(jsonContent);
+        string jsonContent = await HttpResponse.Content.ReadAsStringAsync();
+        ResponseData<CustomerDto> responseData = JsonConvert.DeserializeObject<ResponseData<CustomerDto>>(jsonContent);
 
         responseData.Should().NotBeNull();
-        responseData!.Data.Should().NotBeNull();
+        responseData.Data.Should().NotBeNull();
         responseData.ErrorMessage.Should().BeNull();
 
-        responseData.Data.Should().BeEquivalentTo((CustomerDto)customer!);
+        responseData.Data.Should().BeEquivalentTo(ApplicationFactory.CustomerToCustomerDto(customer));
     }
 }

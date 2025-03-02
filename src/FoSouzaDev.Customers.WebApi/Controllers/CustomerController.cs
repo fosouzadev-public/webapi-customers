@@ -28,8 +28,8 @@ public sealed class CustomerController(ICustomerApplicationService customerAppli
     [ProducesResponseType<ResponseData<string>>(StatusCodes.Status500InternalServerError)]
     public async Task<IResult> GetByIdAsync([FromRoute] string id)
     {
-        CustomerDto? customer = await customerApplicationService.GetByIdAsync(id);
-        return TypedResults.Ok(new ResponseData<CustomerDto>(customer!));
+        CustomerDto customer = await customerApplicationService.GetByIdAsync(id);
+        return TypedResults.Ok(new ResponseData<CustomerDto>(customer));
     }
 
     [HttpPatch("{id}")]

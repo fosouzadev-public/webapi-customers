@@ -1,7 +1,7 @@
 ﻿Feature: Edit a customer
 
 Scenario: Editing a customer successfully
-	Given I choose a customer id: valid
+	Given I choose a customer with id: valid
 	And   I choose the following data to edit:
 		| operationType | fieldName  | value        |
 		| replace       | name       | TestName     |
@@ -12,7 +12,7 @@ Scenario: Editing a customer successfully
 	And   The customer must be edited in the database
 
 Scenario Outline: Trying to edit a customer with an invalid name
-	Given I choose a customer id: valid
+	Given I choose a customer with id: valid
 	And   I choose the following data to edit:
 		| operationType   | fieldName   |
 		| <operationType> | <fieldName> |
@@ -28,7 +28,7 @@ Scenario Outline: Trying to edit a customer with an invalid name
 		| remove        | lastName    | 400            | Invalid last name. |
 
 Scenario: Trying to edit a customer with an invalid id
-	Given I choose a customer id: 111111111111111111111111
+	Given I choose a customer with id: 111111111111111111111111
 	And   I choose the following data to edit:
 		| operationType | fieldName   | value    |
 		| replace       | name        | TestName |

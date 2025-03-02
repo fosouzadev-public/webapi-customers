@@ -1,17 +1,21 @@
 ﻿using AutoFixture;
 using FluentAssertions;
 using FoSouzaDev.Customers.Application.DataTransferObjects;
-using FoSouzaDev.Customers.Application.Mappings;
+using FoSouzaDev.Customers.Application.Factories;
 using FoSouzaDev.Customers.CommonTests;
 using FoSouzaDev.Customers.Domain.Entities;
 using FoSouzaDev.Customers.Domain.ValueObjects;
 
-namespace FoSouzaDev.Customers.UnitaryTests.Application.Mappings;
+namespace FoSouzaDev.Customers.UnitaryTests.Application.Factories;
 
 public sealed class CustomerFactoryTest : BaseTest
 {
+    private readonly ICustomerFactory _factory;
+    
     public CustomerFactoryTest()
     {
+        _factory = new CustomerFactory();
+        
         Fixture.Customize<CustomerDto>(a => a
             .With(b => b.BirthDate, ValidDataGenerator.ValidBirthDate)
             .With(b => b.Email, ValidDataGenerator.ValidEmail)
@@ -39,7 +43,7 @@ public sealed class CustomerFactoryTest : BaseTest
         };
 
         // Act
-        CustomerDto customerDto = CustomerFactory.CustomerToCustomerDto(customer);
+        CustomerDto customerDto = _factory.CustomerToCustomerDto(customer);
 
         // Assert
         customerDto.Should().BeEquivalentTo(expectedCustomerDto);
@@ -60,7 +64,7 @@ public sealed class CustomerFactoryTest : BaseTest
         };
 
         // Act
-        Customer customer = CustomerFactory.AddCustomerDtoToCustomer(addCustomerDto);
+        Customer customer = _factory.AddCustomerDtoToCustomer(addCustomerDto);
 
         // Assert
         customer.Should().BeEquivalentTo(expectedCustomer);
@@ -79,7 +83,7 @@ public sealed class CustomerFactoryTest : BaseTest
         };
 
         // Act
-        EditCustomerDto editCustomerDto = CustomerFactory.CustomerToEditCustomerDto(customer);
+        EditCustomerDto editCustomerDto = _factory.CustomerToEditCustomerDto(customer);
 
         // Assert
         editCustomerDto.Should().BeEquivalentTo(expectedEditCustomerDto);

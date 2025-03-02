@@ -20,7 +20,7 @@ public sealed class ApiSettingsTest(MongoDbFixture mongoDbFixture)
     {
         // Arrange
         IConfiguration configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new List<KeyValuePair<string, string?>>
+            .AddInMemoryCollection(new List<KeyValuePair<string, string>>
             {
                 new("MongoDbSettings:ConnectionURI", mongoDbFixture.ConnectionString),
                 new("MongoDbSettings:DatabaseName", mongoDbFixture.DatabaseName)

@@ -2,11 +2,11 @@
 using FoSouzaDev.Customers.Domain.ValueObjects;
 using FoSouzaDev.Customers.Infrastructure.Repositories.Entities;
 
-namespace FoSouzaDev.Customers.Infrastructure.Repositories.Mappings;
+namespace FoSouzaDev.Customers.Infrastructure.Repositories.Factories;
 
-internal static class CustomerEntityFactory
+internal class CustomerEntityFactory : ICustomerEntityFactory
 {
-    public static CustomerEntity CustomerToCustomerEntity(Customer customer) => new()
+    public CustomerEntity CustomerToCustomerEntity(Customer customer) => new()
     {
         Id = customer.Id,
         Name = customer.FullName.Name,
@@ -16,10 +16,10 @@ internal static class CustomerEntityFactory
         Notes = customer.Notes
     };
 
-    public static Customer? CustomerEntityToCustomer(CustomerEntity? customerEntity)
+    public Customer CustomerEntityToCustomer(CustomerEntity customerEntity)
     {
         if (customerEntity == null)
-            return default;
+            return null;
 
         return new()
         {

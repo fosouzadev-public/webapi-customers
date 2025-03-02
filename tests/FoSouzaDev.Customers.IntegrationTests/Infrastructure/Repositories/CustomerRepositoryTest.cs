@@ -6,6 +6,7 @@ using FoSouzaDev.Customers.Domain.Exceptions;
 using FoSouzaDev.Customers.Domain.Repositories;
 using FoSouzaDev.Customers.Domain.ValueObjects;
 using FoSouzaDev.Customers.Infrastructure.Repositories;
+using FoSouzaDev.Customers.Infrastructure.Repositories.Factories;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
@@ -15,21 +16,22 @@ namespace FoSouzaDev.Customers.IntegrationTests.Infrastructure.Repositories;
 public sealed class CustomerRepositoryTest(MongoDbFixture mongoDbFixture) : BaseTest
 {
     private readonly ICustomerRepository _customerRepository = new CustomerRepository(
-        mongoDbFixture.MongoDatabase!,
-        new LoggerFactory().CreateLogger<CustomerRepository>());
+        mongoDbFixture.MongoDatabase,
+        new LoggerFactory().CreateLogger<CustomerRepository>(),
+        new CustomerEntityFactory());
 
     [Fact]
     public async Task AddAsync_Success_SetNewId()
     {
         // Arrange
-        Customer expectedCustomer  = base.Fixture.Create<Customer>();
+        Customer expectedCustomer  = Fixture.Create<Customer>();
         expectedCustomer.Id = string.Empty;
 
         // Act
         await _customerRepository.AddAsync(expectedCustomer);
 
         // Assert
-        Customer? customer = await _customerRepository.GetByIdAsync(expectedCustomer.Id);
+        Customer customer = await _customerRepository.GetByIdAsync(expectedCustomer.Id);
         customer.Should().BeEquivalentTo(expectedCustomer);
     }
 
@@ -37,17 +39,17 @@ public sealed class CustomerRepositoryTest(MongoDbFixture mongoDbFixture) : Base
     public async Task AddAsync_EmailConflict_ThrowConflictException()
     {
         // Arrange
-        Customer currentCustomer = base.Fixture.Create<Customer>();
+        Customer currentCustomer = Fixture.Create<Customer>();
         currentCustomer.Id = string.Empty;
         await _customerRepository.AddAsync(currentCustomer);
 
         Customer expectedCustomer = new()
         {
             Id = string.Empty,
-            FullName = base.Fixture.Create<FullName>(),
-            BirthDate = base.Fixture.Create<BirthDate>(),
+            FullName = Fixture.Create<FullName>(),
+            BirthDate = Fixture.Create<BirthDate>(),
             Email = currentCustomer.Email,
-            Notes = base.Fixture.Create<string>()
+            Notes = Fixture.Create<string>()
         };
 
         // Act
@@ -66,7 +68,7 @@ public sealed class CustomerRepositoryTest(MongoDbFixture mongoDbFixture) : Base
         string id = $"{new ObjectId()}";
 
         // Act
-        Customer? customer = await _customerRepository.GetByIdAsync(id);
+        Customer customer = await _customerRepository.GetByIdAsync(id);
 
         // Assert
         customer.Should().BeNull();
@@ -76,19 +78,19 @@ public sealed class CustomerRepositoryTest(MongoDbFixture mongoDbFixture) : Base
     public async Task ReplaceAsync_Success_ReplacedObject()
     {
         // Arrange
-        Customer expectedCustomer = base.Fixture.Create<Customer>();
+        Customer expectedCustomer = Fixture.Create<Customer>();
         expectedCustomer.Id = string.Empty;
 
         await _customerRepository.AddAsync(expectedCustomer);
 
-        expectedCustomer.FullName = base.Fixture.Create<FullName>();
-        expectedCustomer.Notes = base.Fixture.Create<string>();
+        expectedCustomer.FullName = Fixture.Create<FullName>();
+        expectedCustomer.Notes = Fixture.Create<string>();
 
         // Act
         await _customerRepository.ReplaceAsync(expectedCustomer);
 
         // Assert
-        Customer? customer = await _customerRepository.GetByIdAsync(expectedCustomer.Id);
+        Customer customer = await _customerRepository.GetByIdAsync(expectedCustomer.Id);
         customer.Should().BeEquivalentTo(expectedCustomer);
     }
 
@@ -96,7 +98,7 @@ public sealed class CustomerRepositoryTest(MongoDbFixture mongoDbFixture) : Base
     public async Task ReplaceAsync_NotFound_ThrowInvalidOperationException()
     {
         // Arrange
-        Customer expectedCustomer = base.Fixture.Create<Customer>();
+        Customer expectedCustomer = Fixture.Create<Customer>();
         expectedCustomer.Id = $"{new ObjectId()}";
 
         // Act
@@ -111,7 +113,7 @@ public sealed class CustomerRepositoryTest(MongoDbFixture mongoDbFixture) : Base
     public async Task DeleteAsync_Success_DeletedObject()
     {
         // Arrange
-        Customer expectedCustomer = base.Fixture.Create<Customer>();
+        Customer expectedCustomer = Fixture.Create<Customer>();
         expectedCustomer.Id = string.Empty;
 
         await _customerRepository.AddAsync(expectedCustomer);
@@ -120,7 +122,7 @@ public sealed class CustomerRepositoryTest(MongoDbFixture mongoDbFixture) : Base
         await _customerRepository.DeleteAsync(expectedCustomer.Id);
 
         // Assert
-        Customer? customer = await _customerRepository.GetByIdAsync(expectedCustomer.Id);
+        Customer customer = await _customerRepository.GetByIdAsync(expectedCustomer.Id);
         customer.Should().BeNull();
     }
 

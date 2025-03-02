@@ -8,5 +8,5 @@ public sealed class Customer
     public required FullName FullName { get; set; }
     public required BirthDate BirthDate { get; init; }
     public required Email Email { get; init; }
-    public string? Notes { get; set; }
+    public string Notes { get; set; }
 }

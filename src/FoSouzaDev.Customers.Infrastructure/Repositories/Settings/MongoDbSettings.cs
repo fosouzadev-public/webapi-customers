@@ -2,6 +2,6 @@
 
 internal sealed class MongoDbSettings
 {
-    public string? ConnectionURI { get; init; }
-    public string? DatabaseName { get; init; }
+    public string ConnectionUri { get; init; }
+    public string DatabaseName { get; init; }
 }

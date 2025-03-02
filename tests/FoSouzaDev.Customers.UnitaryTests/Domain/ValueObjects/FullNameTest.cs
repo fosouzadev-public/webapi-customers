@@ -12,8 +12,8 @@ public sealed class FullNameTest : BaseTest
     public void Constructor_ValidFullName_NotThrowException()
     {
         // Arrange
-        string name = base.Fixture.Create<string>();
-        string lastName = base.Fixture.Create<string>();
+        string name = Fixture.Create<string>();
+        string lastName = Fixture.Create<string>();
 
         // Act
         FullName fullName = new(name, lastName);
@@ -28,13 +28,13 @@ public sealed class FullNameTest : BaseTest
     [InlineData("")]
     [InlineData("a")]
     [InlineData("aa")]
-    public void Constructor_InvalidName_ThrowValidateException(string? name)
+    public void Constructor_InvalidName_ThrowValidateException(string name)
     {
         // Arrange
-        string lastName = base.Fixture.Create<string>();
+        string lastName = Fixture.Create<string>();
 
         // Act
-        Action act = () => _ = new FullName(name!, lastName);
+        Action act = () => _ = new FullName(name, lastName);
 
         // Assert
         act.Should().ThrowExactly<ValidateException>().WithMessage("Invalid name.");
@@ -45,13 +45,13 @@ public sealed class FullNameTest : BaseTest
     [InlineData("")]
     [InlineData("a")]
     [InlineData("aa")]
-    public void Constructor_InvalidLastName_ThrowValidateException(string? lastName)
+    public void Constructor_InvalidLastName_ThrowValidateException(string lastName)
     {
         // Arrange
-        string name = base.Fixture.Create<string>();
+        string name = Fixture.Create<string>();
 
         // Act
-        Action act = () => _ = new FullName(name, lastName!);
+        Action act = () => _ = new FullName(name, lastName);
 
         // Assert
         act.Should().ThrowExactly<ValidateException>().WithMessage("Invalid last name.");
@@ -61,8 +61,8 @@ public sealed class FullNameTest : BaseTest
     public void Constructor_ObjectComparison_ShowEquality()
     {
         // Arrange
-        string name = base.Fixture.Create<string>();
-        string lastName = base.Fixture.Create<string>();
+        string name = Fixture.Create<string>();
+        string lastName = Fixture.Create<string>();
 
         FullName fullName1 = new(name, lastName);
         FullName fullName2 = new(name, lastName);

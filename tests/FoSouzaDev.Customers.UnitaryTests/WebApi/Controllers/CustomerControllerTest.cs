@@ -28,8 +28,8 @@ public sealed class CustomerControllerTest : BaseTest
     public async Task AddAsync_Success_ReturnHttpResponseCreatedWithExpectedData()
     {
         // Arrange
-        AddCustomerDto request = base.Fixture.Create<AddCustomerDto>();
-        string expectedId = base.Fixture.Create<string>();
+        AddCustomerDto request = Fixture.Create<AddCustomerDto>();
+        string expectedId = Fixture.Create<string>();
 
         _customerApplicationService.Setup(a => a.AddAsync(request)).ReturnsAsync(expectedId);
 
@@ -47,8 +47,8 @@ public sealed class CustomerControllerTest : BaseTest
     public async Task GetByIdAsync_Success_ReturnHttpResponseOkWithExpectedData()
     {
         // Arrange
-        string id = base.Fixture.Create<string>();
-        CustomerDto expectedCustomer = base.Fixture.Create<CustomerDto>();
+        string id = Fixture.Create<string>();
+        CustomerDto expectedCustomer = Fixture.Create<CustomerDto>();
 
         _customerApplicationService.Setup(a => a.GetByIdAsync(id)).ReturnsAsync(expectedCustomer);
 
@@ -56,8 +56,8 @@ public sealed class CustomerControllerTest : BaseTest
         IResult response = await _customerController.GetByIdAsync(id);
 
         // Assert
-        ResponseData<CustomerDto>? responseData = response.Should().BeOfType<Ok<ResponseData<CustomerDto>>>().Subject.Value;
-        responseData!.ErrorMessage.Should().BeNull();
+        ResponseData<CustomerDto> responseData = response.Should().BeOfType<Ok<ResponseData<CustomerDto>>>().Subject.Value;
+        responseData.ErrorMessage.Should().BeNull();
         responseData.Data.Should().BeEquivalentTo(expectedCustomer);
     }
 
@@ -65,8 +65,8 @@ public sealed class CustomerControllerTest : BaseTest
     public async Task EditAsync_Success_ReturnHttpResponseNoContent()
     {
         // Arrange
-        string id = base.Fixture.Create<string>();
-        JsonPatchDocument<EditCustomerDto> request = base.Fixture.Build<JsonPatchDocument<EditCustomerDto>>()
+        string id = Fixture.Create<string>();
+        JsonPatchDocument<EditCustomerDto> request = Fixture.Build<JsonPatchDocument<EditCustomerDto>>()
             .Without(a => a.ContractResolver)
             .Create();
 
@@ -81,7 +81,7 @@ public sealed class CustomerControllerTest : BaseTest
     public async Task DeleteAsync_Success_ReturnHttpResponseNoContent()
     {
         // Arrange
-        string id = base.Fixture.Create<string>();
+        string id = Fixture.Create<string>();
 
         // Act
         IResult response = await _customerController.DeleteAsync(id);

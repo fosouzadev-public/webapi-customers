@@ -17,10 +17,10 @@ public sealed class EmailTest : BaseTest
     [InlineData("a@a")]
     [InlineData("a@a.")]
     [InlineData("abc-abc.com")]
-    public void Constructor_InvalidEmail_ThrowValidateException(string? email)
+    public void Constructor_InvalidEmail_ThrowValidateException(string email)
     {
         // Act
-        Action act = () => _ = new Email(email!);
+        Action act = () => _ = new Email(email);
 
         // Assert
         act.Should().ThrowExactly<ValidateException>().WithMessage("Invalid email.");

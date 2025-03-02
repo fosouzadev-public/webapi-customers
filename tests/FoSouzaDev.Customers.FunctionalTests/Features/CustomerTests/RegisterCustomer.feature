@@ -4,7 +4,7 @@ Scenario: Registering a customer successfully
 	Given I choose valid random data for a new customer
 	When  I send a registration request
 	Then  The http response should be 201
-	And   The response contais the inserted id
+	And   The response contains the inserted id
 	And   The customer must exist in the database
 
 Scenario: Trying to register an existing customer

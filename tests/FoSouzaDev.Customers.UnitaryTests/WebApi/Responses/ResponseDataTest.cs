@@ -11,7 +11,7 @@ public sealed class ResponseDataTest : BaseTest
     public void Constructor_SuccessWithData_CreateAnObject()
     {
         // Arrange
-        string expectedData = base.Fixture.Create<string>();
+        string expectedData = Fixture.Create<string>();
 
         // Act
         ResponseData<string> responseData = new(data: expectedData);
@@ -25,7 +25,7 @@ public sealed class ResponseDataTest : BaseTest
     public void Constructor_SuccessWithErrorMessage_CreateAnObject()
     {
         // Arrange
-        string expectedErrorMessage = base.Fixture.Create<string>();
+        string expectedErrorMessage = Fixture.Create<string>();
 
         // Act
         ResponseData<string> responseData = new(errorMessage: expectedErrorMessage);
@@ -39,8 +39,8 @@ public sealed class ResponseDataTest : BaseTest
     public void Constructor_SuccessWithDataAndErrorMessage_CreateAnObject()
     {
         // Arrange
-        string expectedData = base.Fixture.Create<string>();
-        string expectedErrorMessage = base.Fixture.Create<string>();
+        string expectedData = Fixture.Create<string>();
+        string expectedErrorMessage = Fixture.Create<string>();
 
         // Act
         ResponseData<string> responseData = new(expectedData, expectedErrorMessage);
@@ -53,12 +53,8 @@ public sealed class ResponseDataTest : BaseTest
     [Fact]
     public void Constructor_InvalidData_ThrowArgumentNullException()
     {
-        // Arrange
-        string? expectedData = default;
-        string? expectedErrorMessage = default;
-
         // Act
-        Action act = () => new ResponseData<string>(expectedData, expectedErrorMessage);
+        Action act = () => new ResponseData<string>(null, null);
 
         // Assert
         act.Should().ThrowExactly<ArgumentNullException>().WithMessage("Invalid data.");

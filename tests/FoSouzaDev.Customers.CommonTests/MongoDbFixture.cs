@@ -11,8 +11,8 @@ public sealed class MongoDbFixture : IAsyncLifetime
         .Build();
 
     public string DatabaseName => "test";
-    public string? ConnectionString { get; private set; }
-    public IMongoDatabase? MongoDatabase { get; private set; }
+    public string ConnectionString { get; private set; }
+    public IMongoDatabase MongoDatabase { get; private set; }
 
     public async Task InitializeAsync()
     {
@@ -21,7 +21,7 @@ public sealed class MongoDbFixture : IAsyncLifetime
         ConnectionString = _mongoDbContainer.GetConnectionString();
         MongoDatabase = new MongoClient(ConnectionString).GetDatabase(DatabaseName);
 
-        (await _mongoDbContainer.ExecScriptAsync(@"db.customers.createIndex( { ""email"": 1 }, { unique: true } );"))
+        (await _mongoDbContainer.ExecScriptAsync("db.customers.createIndex( { 'email': 1 }, { unique: true } );"))
             .Stdout.Should().Contain("true");
     }
 

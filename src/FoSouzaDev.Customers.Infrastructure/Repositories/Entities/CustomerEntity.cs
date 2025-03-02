@@ -1,6 +1,4 @@
-﻿using FoSouzaDev.Customers.Domain.Entities;
-using FoSouzaDev.Customers.Infrastructure.Repositories.Mappings;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace FoSouzaDev.Customers.Infrastructure.Repositories.Entities;
@@ -26,11 +24,5 @@ internal sealed class CustomerEntity
 
     [BsonIgnoreIfNull]
     [BsonElement("notes")]
-    public string? Notes { get; set; }
-
-    public static explicit operator CustomerEntity(Customer customer) =>
-        CustomerEntityFactory.CustomerToCustomerEntity(customer);
-
-    public static explicit operator Customer?(CustomerEntity? customerEntity) =>
-        CustomerEntityFactory.CustomerEntityToCustomer(customerEntity);
+    public string Notes { get; set; }
 }

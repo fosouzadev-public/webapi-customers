@@ -19,11 +19,11 @@ public sealed class EditCustomerFeature(MongoDbFixture mongoDbFixture) : BaseCus
     [And("I choose the following data to edit:")]
     public void EditCustomerData(DataTable operations)
     {
-        foreach (TableRow? row in operations.Rows.Skip(1))
+        foreach (TableRow row in operations.Rows.Skip(1))
         {
             string operationType = row.Cells.ElementAt(0).Value;
             string fieldName = row.Cells.ElementAt(1).Value;
-            string? value = row.Cells.ElementAtOrDefault(2)?.Value;
+            string value = row.Cells.ElementAtOrDefault(2)?.Value;
 
             _pathDocument.Operations.Add(new Operation<EditCustomerDto>
             {
@@ -40,17 +40,17 @@ public sealed class EditCustomerFeature(MongoDbFixture mongoDbFixture) : BaseCus
         StartApplication();
 
         using StringContent jsonContent = new(JsonConvert.SerializeObject(_pathDocument.Operations), Encoding.UTF8, "application/json");
-        base.HttpResponse = await base.HttpClient!.PatchAsync($"{Route}/{base.CustomerId}", jsonContent);
+        HttpResponse = await HttpClient.PatchAsync($"{Route}/{CustomerId}", jsonContent);
     }
 
     [And("The customer must be edited in the database")]
     public async Task ValidateDatabase()
     {
-        Customer? customer = await base.CustomerRepository.GetByIdAsync(base.CustomerId!);
+        Customer customer = await Repository.GetByIdAsync(CustomerId);
         customer.Should().NotBeNull();
 
-        customer!.FullName.Name.Should().Be(_pathDocument!.Operations.First(a => a.path == "/name").value.ToString());
-        customer.FullName.LastName.Should().Be(_pathDocument!.Operations.First(a => a.path == "/lastName").value.ToString());
-        customer.Notes.Should().Be(_pathDocument!.Operations.First(a => a.path == "/notes").value.ToString());
+        customer.FullName.Name.Should().Be(_pathDocument.Operations.First(a => a.path == "/name").value.ToString());
+        customer.FullName.LastName.Should().Be(_pathDocument.Operations.First(a => a.path == "/lastName").value.ToString());
+        customer.Notes.Should().Be(_pathDocument.Operations.First(a => a.path == "/notes").value.ToString());
     }
 }

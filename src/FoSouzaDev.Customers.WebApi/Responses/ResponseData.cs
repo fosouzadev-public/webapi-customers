@@ -2,7 +2,7 @@
 
 internal sealed class ResponseData<T>
 {
-    public ResponseData(T? data = default, string? errorMessage = default)
+    public ResponseData(T data = default, string errorMessage = null)
     {
         if (data == null && errorMessage == null)
             throw new ArgumentNullException(message: "Invalid data.", null);
@@ -11,6 +11,6 @@ internal sealed class ResponseData<T>
         ErrorMessage = errorMessage;
     }
 
-    public T? Data { get; private init; }
-    public string? ErrorMessage { get; private init; }
+    public T Data { get; private init; }
+    public string ErrorMessage { get; private init; }
 }
